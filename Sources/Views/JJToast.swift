@@ -26,9 +26,9 @@ public class JJToast {
     var textFont = UIFont.systemFont(ofSize: 15)
     /// 文本颜色
     var textColor = UIColor.white
-    /// 最小显示时长（非加载动画有效）
+    /// 文本提示最小显示时长
     var minShowTime = 1.0
-    /// 最大显示时长（非加载动画有效）
+    /// 文本提示最大显示时长
     var maxShowTime = 5.0
     /// 禁用背景的事件响应。若为 false ，则显示在 Toast 背景下的控件会响应事件传递。例：按钮允许点击、列表允许滑动
     var disableBackgroundResponder = true
@@ -78,32 +78,32 @@ public extension JJToast {
             let delayTime = min(minimum, JJToast.share.maxShowTime)
             
             toastBgView.alpha = 0
-            toastView.transform = CGAffineTransformMakeScale(0.9, 0.9)
+            toastBgView.transform = CGAffineTransformMakeScale(0.95, 0.95)
             UIView.animate(withDuration: 0.1) {
                 toastBgView.alpha = 0.5
-                toastView.transform = CGAffineTransformMakeScale(1.1, 1.1)
+                toastBgView.transform = CGAffineTransformMakeScale(1.05, 1.05)
             } completion: { _ in
                 UIView.animate(withDuration: 0.1) {
                     toastBgView.alpha = 1
-                    toastView.transform = CGAffineTransformIdentity
+                    toastBgView.transform = CGAffineTransformIdentity
                 }
                 UIView.animate(withDuration: 0.2, delay: delayTime, options: .curveEaseInOut) {
                     toastBgView.alpha = 0
-                    toastView.transform = CGAffineTransformMakeScale(0.9, 0.9)
+                    toastBgView.transform = CGAffineTransformMakeScale(0.95, 0.95)
                 } completion: { _ in
                     toastBgView.removeFromSuperview()
-                    toastView.transform = CGAffineTransformIdentity
+                    toastBgView.transform = CGAffineTransformIdentity
                 }
             }
         }
     }
     
-    
     /// 显示加载动画
     /// - Parameters:
     ///   - toView: 在哪个视图上显示
     ///   - text: 提示的文本
-    class func showActivity(to toView: UIView? = nil, text: String? = nil) {
+    ///   - closeButton: 关闭按钮
+    class func showActivity(to toView: UIView? = nil, text: String? = nil, closeButton: UIButton? = nil) {
         
         DispatchQueue.main.async {
             
@@ -136,7 +136,7 @@ public extension JJToast {
                 toastView.center = CGPoint(x: toastBgView.width/2.0, y: toastBgView.height/2.0)
                 imageView.center = CGPoint(x: toastView.width/2.0, y: toastView.height/2.0)
                 textLabel.center = CGPoint(x: toastView.width/2.0, y: toastView.height/2.0 + 30)
-                activityView.center = CGPoint(x: toastView.width/2.0, y: activitySize.height/2.0)
+                activityView.center = CGPoint(x: toastView.width/2.0, y: activitySize.height/2.0 - 8)
             } else {
                 toastView.frame = CGRect(origin: CGPoint.zero, size: activitySize)
                 imageView.frame = CGRect(origin: CGPoint.zero, size: activitySize)
@@ -145,12 +145,20 @@ public extension JJToast {
                 toastView.center = CGPoint(x: toastBgView.width/2.0, y: toastBgView.height/2.0)
             }
             
+            if let closeButton {
+                toastBgView.addSubview(closeButton)
+                closeButton.center = CGPoint(x: toastBgView.width/2.0, y: (toastBgView.height + toastView.height)/2.0 + 45)
+            }
+            
             toastBgView.alpha = 0
-            UIView.animate(withDuration: 0.2) {
-                toastBgView.alpha = 1
+            toastBgView.transform = CGAffineTransformMakeScale(0.95, 0.95)
+            UIView.animate(withDuration: 0.1) {
+                toastBgView.alpha = 0.5
+                toastBgView.transform = CGAffineTransformMakeScale(1.05, 1.05)
             } completion: { _ in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    hideActivity(from: toView)
+                UIView.animate(withDuration: 0.1) {
+                    toastBgView.alpha = 1
+                    toastBgView.transform = CGAffineTransformIdentity
                 }
             }
         }
@@ -166,9 +174,11 @@ public extension JJToast {
         guard let toastBgView = bgView.viewWithTag(JJToast.share.activityTag) else { return }
         
         UIView.animate(withDuration: 0.2) {
-            toastBgView.alpha = 1
+            toastBgView.alpha = 0
+            toastBgView.transform = CGAffineTransformMakeScale(0.95, 0.95)
         } completion: { _ in
             toastBgView.removeFromSuperview()
+            toastBgView.transform = CGAffineTransformIdentity
         }
     }
 }
