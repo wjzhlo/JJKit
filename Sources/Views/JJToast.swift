@@ -26,9 +26,9 @@ public class JJToast {
     var textFont = UIFont.systemFont(ofSize: 15)
     /// 文本颜色
     var textColor = UIColor.white
-    /// 最小显示时长
+    /// 最小显示时长（非加载动画有效）
     var minShowTime = 1.0
-    /// 最大显示时长
+    /// 最大显示时长（非加载动画有效）
     var maxShowTime = 5.0
     /// 禁用背景的事件响应。若为 false ，则显示在 Toast 背景下的控件会响应事件传递。例：按钮允许点击、列表允许滑动
     var disableBackgroundResponder = true
